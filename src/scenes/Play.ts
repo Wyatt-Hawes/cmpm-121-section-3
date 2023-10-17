@@ -52,6 +52,7 @@ export default class Play extends Phaser.Scene {
         "starfield",
       )
       .setOrigin(0, 0);
+    this.starfield!.flipX = true;
 
     this.spinner = this.add.rectangle(
       this.defaultSpinnerX,
@@ -59,7 +60,7 @@ export default class Play extends Phaser.Scene {
       10,
       10,
       0xfc46aa,
-    );
+    ).setOrigin(0.5,0.5);
     this.spawnEnemy();
   }
 
@@ -72,7 +73,7 @@ export default class Play extends Phaser.Scene {
 
   spawnEnemy() {
     this.enemies.push(
-      this.add.rectangle(900, Math.random() * 400, 50, 50, 0xff0000),
+      this.add.rectangle(900, Math.random() * 400, 50, 50, 0xff0000).setOrigin(0.5,0.5),
     );
     setTimeout(
       () => {
@@ -117,8 +118,8 @@ export default class Play extends Phaser.Scene {
     this.enemies.forEach((enemy) => {
       enemy.x -= delta * this.enemyVelocity;
       if (
-        Math.abs(enemy.x - this.spinner!.x) < 40 &&
-        Math.abs(enemy.y - this.spinner!.y) < 40
+        Math.abs(enemy.x - this.spinner!.x) < enemy.width/2 + this.spinner!.width/2 &&
+        Math.abs(enemy.y - this.spinner!.y) < enemy.width/2 + this.spinner!.width/2
       ) {
         this.enemies.splice(this.enemies.indexOf(enemy), 1);
         enemy.destroy();
