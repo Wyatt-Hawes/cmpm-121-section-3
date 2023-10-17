@@ -21,7 +21,7 @@ export default class Play extends Phaser.Scene {
   fired = false;
 
   //Enemy Traits
-  enemies:Phaser.GameObjects.Rectangle[]  = [];
+  enemies: Phaser.GameObjects.Rectangle[] = [];
   enemyVelocity = 0.25;
 
   constructor() {
@@ -53,9 +53,14 @@ export default class Play extends Phaser.Scene {
       )
       .setOrigin(0, 0);
 
-    this.spinner = this.add.rectangle(this.defaultSpinnerX, this.defaultSpinnerY, 10, 10, 0xfc46aa);
+    this.spinner = this.add.rectangle(
+      this.defaultSpinnerX,
+      this.defaultSpinnerY,
+      10,
+      10,
+      0xfc46aa,
+    );
     this.spawnEnemy();
-    
   }
 
   resetSpinner() {
@@ -66,8 +71,16 @@ export default class Play extends Phaser.Scene {
   }
 
   spawnEnemy() {
-    this.enemies.push(this.add.rectangle(900, Math.random() * 400, 50, 50, 0xFF0000));
-    setTimeout(()=>{this.spawnEnemy()}, Math.random()* 2000 + 500)
+    this.enemies.push(
+      this.add.rectangle(900, Math.random() * 400, 50, 50, 0xff0000),
+    );
+    setTimeout(
+      () => {
+        this.spawnEnemy();
+      },
+      Math.random() * 2000 + 500,
+    );
+    
   }
 
   update(_timeMs: number, delta: number) {
@@ -75,11 +88,15 @@ export default class Play extends Phaser.Scene {
 
     if (this.left!.isDown) {
       this.spinner!.rotation -= delta * this.rotationSpeed;
-      this.spinner!.x -= delta * this.leftRightVelocity;
+      if (!this.fired) {
+        this.spinner!.x -= delta * this.leftRightVelocity;
+      }
     }
     if (this.right!.isDown) {
       this.spinner!.rotation += delta * this.rotationSpeed;
-      this.spinner!.x += delta * this.leftRightVelocity;
+      if (!this.fired) {
+        this.spinner!.x += delta * this.leftRightVelocity;
+      }
     }
 
     if (this.fire!.isDown) {
@@ -99,6 +116,13 @@ export default class Play extends Phaser.Scene {
     }
     this.enemies.forEach((enemy) => {
       enemy.x -= delta * this.enemyVelocity;
-    })
+      if (
+        Math.abs(enemy.x - this.spinner!.x) < 40 &&
+        Math.abs(enemy.y - this.spinner!.y) < 40
+      ) {
+        this.enemies.splice(this.enemies.indexOf(enemy), 1);
+        enemy.destroy();
+      }
+    });
   }
 }
